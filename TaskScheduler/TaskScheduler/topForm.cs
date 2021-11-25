@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace TaskScheduler
 {
-    public partial class Form1 : Form
+    public partial class topForm : Form
     {
-        public Form1()
+        public topForm()
         {
             InitializeComponent();
         }
