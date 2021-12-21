@@ -12,9 +12,14 @@ namespace TaskScheduler
 {
     public partial class topForm : Form
     {
+        public string IniPath = @"..\..\Settings\Ini.ini";
         public topForm()
         {
+            var iniFileService = new IniFileService();
+            iniFileService.iniFilePath = IniPath;
+            iniFileService.ReadIniFile();
             InitializeComponent();
         }
+
     }
 }
