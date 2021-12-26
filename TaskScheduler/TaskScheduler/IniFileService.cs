@@ -12,15 +12,15 @@ namespace TaskScheduler
     {
         public string iniFilePath;
 
-        public void ReadIniFile()
+        public Tasks ReadIniFile()
         {
             var parser = new FileIniDataParser();
             IniData data = parser.ReadFile(iniFilePath);
             string dataSourcePath = data["DataSource"]["DataSourcePath"];
             var taskService = new TaskService();
             taskService.dataSourcePath = dataSourcePath;
-            taskService.ReadTaskFile();
-
+            var deserializedTasks = taskService.ReadTaskFile();
+            return deserializedTasks;
 
         }
 
