@@ -13,13 +13,14 @@ namespace TaskScheduler
     {
         public string dataSourcePath;
 
-        public void ReadTaskFile()
+        public Tasks ReadTaskFile()
         {
             StreamReader sr = new StreamReader(dataSourcePath);
             string str = sr.ReadToEnd();
             sr.Close();
             Tasks deserializedTasks = JsonConvert.DeserializeObject<Tasks>(str,
                    new IsoDateTimeConverter { DateTimeFormat = "dd/MM/yyyy" });
+            return deserializedTasks;
         }
 
 

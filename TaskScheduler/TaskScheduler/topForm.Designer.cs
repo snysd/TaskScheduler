@@ -49,7 +49,7 @@ namespace TaskScheduler
             // listViewTask
             // 
             this.listViewTask.HideSelection = false;
-            this.listViewTask.Location = new System.Drawing.Point(46, 123);
+            this.listViewTask.Location = new System.Drawing.Point(44, 113);
             this.listViewTask.Name = "listViewTask";
             this.listViewTask.Size = new System.Drawing.Size(1080, 542);
             this.listViewTask.TabIndex = 1;
@@ -94,6 +94,7 @@ namespace TaskScheduler
             this.Controls.Add(this.label1);
             this.Name = "topForm";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.topForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -13,6 +13,41 @@
       "discription": "今月中に部屋を掃除する",
       "dueDate": "30/11/2021",
       "isDone": false
+    },
+    {
+      "id": 2,
+      "taskName": "散歩",
+      "discription": "散歩する",
+      "dueDate": "30/11/2022",
+      "isDone": true
+    },
+    {
+      "id": 3,
+      "taskName": "買い物",
+      "discription": "買い物する",
+      "dueDate": "30/09/2022",
+      "isDone": true
+    },
+    {
+      "id": 4,
+      "taskName": "掃除",
+      "discription": "今月中に部屋を掃除する",
+      "dueDate": "30/11/2021",
+      "isDone": false
+    },
+    {
+      "id": 5,
+      "taskName": "睡眠",
+      "discription": "寝る",
+      "dueDate": "30/11/2021",
+      "isDone": true
+    },
+    {
+      "id": 6,
+      "taskName": "運動",
+      "discription": "運動する",
+      "dueDate": "30/03/2022",
+      "isDone": false
     }
   ]
 
