@@ -81,6 +81,7 @@ namespace TaskScheduler
             this.buttonEdit.TabIndex = 4;
             this.buttonEdit.Text = "Edit";
             this.buttonEdit.UseVisualStyleBackColor = true;
+            this.buttonEdit.Click += new System.EventHandler(this.buttonEdit_Click);
             // 
             // topForm
             // 

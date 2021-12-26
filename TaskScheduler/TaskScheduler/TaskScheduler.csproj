@@ -52,6 +52,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddEditTaskForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddEditTaskForm.Designer.cs">
+      <DependentUpon>AddEditTaskForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="IniFileService.cs" />
     <Compile Include="Tasks.cs" />
     <Compile Include="TaskService.cs" />

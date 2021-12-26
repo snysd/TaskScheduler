@@ -62,5 +62,12 @@ namespace TaskScheduler
             }
 
         }
+
+        private void buttonEdit_Click(object sender, EventArgs e)
+        {
+            AddEditTaskForm addEditTaskForm = new AddEditTaskForm();
+            addEditTaskForm.ShowDialog();
+
+        }
     }
 }
