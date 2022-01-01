@@ -14,6 +14,8 @@ namespace TaskScheduler
     {
         public string IniPath = @"..\..\Settings\Ini.ini";
         public Tasks deserializedTasks;
+        AddEditTaskForm addEditTaskForm = new AddEditTaskForm();
+
         public topForm()
         {
             var iniFileService = new IniFileService();
@@ -35,8 +37,7 @@ namespace TaskScheduler
             //listViewTask.Sorting = SortOrder.Ascending;
             listViewTask.View = View.Details;
 
-
-
+            listViewTask.Columns.Clear();
             var columnTaskId = new ColumnHeader();
             var columnTask = new ColumnHeader();
             var columnDescription = new ColumnHeader();
@@ -65,9 +66,57 @@ namespace TaskScheduler
 
         private void buttonEdit_Click(object sender, EventArgs e)
         {
-            AddEditTaskForm addEditTaskForm = new AddEditTaskForm();
-            addEditTaskForm.ShowDialog();
+            if (listViewTask.SelectedItems.Count == 0)
+            {
+                // 選択項目がないので処理をせず抜ける
+                return;
+            }
+            ListViewItem itemx = listViewTask.SelectedItems[0];
+            var tasks = deserializedTasks.tasks;
 
+            Task matchedTask = null;
+            foreach (Task task in tasks)
+            {
+                if(itemx.Text == task.id.ToString())
+                {
+                    matchedTask = task;
+                    break;
+                }
+            }
+            if(matchedTask == null)
+            {
+                return;
+            }
+
+            addEditTaskForm.targetTask = matchedTask;
+
+            addEditTaskForm.FormClosed += AddEditTaskClosed;
+
+            addEditTaskForm.ShowDialog();
         }
+        private void AddEditTaskClosed(object sender, EventArgs e)
+        {
+            Task editedTask = addEditTaskForm.targetTask;
+            var tasks = deserializedTasks.tasks;
+            int i = 0;
+            int matchedIndex = -1;
+            foreach (Task task in tasks)
+            {
+                if (editedTask.id == task.id)
+                {
+                    matchedIndex = i;
+                    break;
+                }
+                i++;
+            }
+            if (matchedIndex < 0)
+            {
+                return;
+            }
+            deserializedTasks.tasks[matchedIndex] = editedTask;
+            InitializeListView();
+        }
+
+
     }
 }

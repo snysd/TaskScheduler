@@ -69,6 +69,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AddEditTaskForm.resx">
+      <DependentUpon>AddEditTaskForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="topForm.resx">
       <DependentUpon>topForm.cs</DependentUpon>
     </EmbeddedResource>
