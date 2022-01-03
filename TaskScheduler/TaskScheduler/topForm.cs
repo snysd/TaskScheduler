@@ -14,7 +14,7 @@ namespace TaskScheduler
     {
         public string IniPath = @"..\..\Settings\Ini.ini";
         public Tasks deserializedTasks;
-        AddEditTaskForm addEditTaskForm = new AddEditTaskForm();
+        AddEditTaskForm addEditTaskForm;
 
         public topForm()
         {
@@ -87,15 +87,22 @@ namespace TaskScheduler
             {
                 return;
             }
+            addEditTaskForm = new AddEditTaskForm();
 
             addEditTaskForm.targetTask = matchedTask;
 
-            addEditTaskForm.FormClosed += AddEditTaskClosed;
+            addEditTaskForm.FormClosed += EditTaskClosed;
+
+            addEditTaskForm.AddForm = false;
 
             addEditTaskForm.ShowDialog();
         }
-        private void AddEditTaskClosed(object sender, EventArgs e)
+        private void EditTaskClosed(object sender, EventArgs e)
         {
+            if (addEditTaskForm.targetTask == null)
+            {
+                return;
+            }
             Task editedTask = addEditTaskForm.targetTask;
             var tasks = deserializedTasks.tasks;
             int i = 0;
@@ -116,7 +123,35 @@ namespace TaskScheduler
             deserializedTasks.tasks[matchedIndex] = editedTask;
             InitializeListView();
         }
+        private void AddTaskClosed(object sender, EventArgs e)
+        {
+            if (addEditTaskForm.targetTask == null)
+            {
+                return;
+            }
+            Task addedTask = addEditTaskForm.targetTask;
+            deserializedTasks.tasks.Add(addedTask);
+            InitializeListView();
+        }
+        private void buttonAdd_Click(object sender, EventArgs e)
+        {
+            addEditTaskForm = new AddEditTaskForm();
+            addEditTaskForm.AddForm = true;
+            addEditTaskForm.maxId = GetMaxId();
+            addEditTaskForm.FormClosed += AddTaskClosed;
+            addEditTaskForm.ShowDialog();
+        }
 
-
+        private int GetMaxId()
+        {
+            var tasks = deserializedTasks.tasks;
+            List<int> Ids = new List<int>();
+            foreach (Task task in tasks)
+            {          
+                Ids.Add(task.id);
+            }
+            Ids.Reverse();
+            return Ids[0];
+        }
     }
 }
