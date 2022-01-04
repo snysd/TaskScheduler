@@ -12,7 +12,6 @@ namespace TaskScheduler
     class TaskService
     {
         public string dataSourcePath;
-
         public Tasks ReadTaskFile()
         {
             StreamReader sr = new StreamReader(dataSourcePath);
@@ -22,7 +21,5 @@ namespace TaskScheduler
                    new IsoDateTimeConverter { DateTimeFormat = "dd/MM/yyyy" });
             return deserializedTasks;
         }
-
-
     }
 }
