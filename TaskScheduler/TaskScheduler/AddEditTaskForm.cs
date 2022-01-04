@@ -15,12 +15,10 @@ namespace TaskScheduler
         public Task targetTask;
         public bool AddForm = true;
         public int maxId;
-
         public AddEditTaskForm()
         {
             InitializeComponent();
         }
-
         private void AddEditTaskForm_Load(object sender, EventArgs e)
         {
             if (AddForm == false)

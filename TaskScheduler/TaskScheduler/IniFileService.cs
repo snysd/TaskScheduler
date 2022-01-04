@@ -11,7 +11,6 @@ namespace TaskScheduler
     class IniFileService
     {
         public string iniFilePath;
-
         public Tasks ReadIniFile()
         {
             var parser = new FileIniDataParser();
@@ -21,9 +20,6 @@ namespace TaskScheduler
             taskService.dataSourcePath = dataSourcePath;
             var deserializedTasks = taskService.ReadTaskFile();
             return deserializedTasks;
-
         }
-
-
     }
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.ListView;
 
 namespace TaskScheduler
 {
@@ -15,7 +16,6 @@ namespace TaskScheduler
         public string IniPath = @"..\..\Settings\Ini.ini";
         public Tasks deserializedTasks;
         AddEditTaskForm addEditTaskForm;
-
         public topForm()
         {
             var iniFileService = new IniFileService();
@@ -23,13 +23,10 @@ namespace TaskScheduler
             deserializedTasks = iniFileService.ReadIniFile();
             InitializeComponent();
         }
-
         private void topForm_Load(object sender, EventArgs e)
         {
             InitializeListView();
-
         }
-
         private void InitializeListView()
         {
             listViewTask.FullRowSelect = true;
@@ -61,14 +58,11 @@ namespace TaskScheduler
                 string[] item = { task.id.ToString(), task.taskName, task.discription, task.dueDate.ToString("yyyy/MM/dd") };
                 listViewTask.Items.Add(new ListViewItem(item));
             }
-
         }
-
         private void buttonEdit_Click(object sender, EventArgs e)
         {
             if (listViewTask.SelectedItems.Count == 0)
             {
-                // 選択項目がないので処理をせず抜ける
                 return;
             }
             ListViewItem itemx = listViewTask.SelectedItems[0];
@@ -88,13 +82,9 @@ namespace TaskScheduler
                 return;
             }
             addEditTaskForm = new AddEditTaskForm();
-
             addEditTaskForm.targetTask = matchedTask;
-
             addEditTaskForm.FormClosed += EditTaskClosed;
-
             addEditTaskForm.AddForm = false;
-
             addEditTaskForm.ShowDialog();
         }
         private void EditTaskClosed(object sender, EventArgs e)
@@ -123,16 +113,7 @@ namespace TaskScheduler
             deserializedTasks.tasks[matchedIndex] = editedTask;
             InitializeListView();
         }
-        private void AddTaskClosed(object sender, EventArgs e)
-        {
-            if (addEditTaskForm.targetTask == null)
-            {
-                return;
-            }
-            Task addedTask = addEditTaskForm.targetTask;
-            deserializedTasks.tasks.Add(addedTask);
-            InitializeListView();
-        }
+
         private void buttonAdd_Click(object sender, EventArgs e)
         {
             addEditTaskForm = new AddEditTaskForm();
@@ -141,7 +122,6 @@ namespace TaskScheduler
             addEditTaskForm.FormClosed += AddTaskClosed;
             addEditTaskForm.ShowDialog();
         }
-
         private int GetMaxId()
         {
             var tasks = deserializedTasks.tasks;
@@ -152,6 +132,42 @@ namespace TaskScheduler
             }
             Ids.Reverse();
             return Ids[0];
+        }
+        private void AddTaskClosed(object sender, EventArgs e)
+        {
+            if (addEditTaskForm.targetTask == null)
+            {
+                return;
+            }
+            Task addedTask = addEditTaskForm.targetTask;
+            deserializedTasks.tasks.Add(addedTask);
+            InitializeListView();
+        }
+
+        private void buttonRemove_Click(object sender, EventArgs e)
+        {
+            if (listViewTask.SelectedItems.Count == 0)
+            {
+                return;
+            }
+            SelectedListViewItemCollection itemx = listViewTask.SelectedItems;
+            var tasks = deserializedTasks.tasks;
+            List<Task> targetTasks = new List<Task>();
+            foreach (ListViewItem item in itemx)
+            {
+                foreach(Task task in tasks)
+                {
+                    if(item.Text == task.id.ToString())
+                    {
+                        targetTasks.Add(task);
+                    }
+                }
+            }
+            foreach(Task targetTask in targetTasks)
+            {
+                deserializedTasks.tasks.Remove(targetTask);
+            }
+            InitializeListView();
         }
     }
 }

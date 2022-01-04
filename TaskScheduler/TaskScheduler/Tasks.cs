@@ -11,7 +11,6 @@ namespace TaskScheduler
     {
         public List<Task> tasks;
     }
-
     public class Task
     {
         public int id;
