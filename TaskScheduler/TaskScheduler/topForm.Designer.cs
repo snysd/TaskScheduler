@@ -34,6 +34,7 @@ namespace TaskScheduler
             this.buttonRemove = new System.Windows.Forms.Button();
             this.buttonAdd = new System.Windows.Forms.Button();
             this.buttonEdit = new System.Windows.Forms.Button();
+            this.Inversion = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -85,11 +86,22 @@ namespace TaskScheduler
             this.buttonEdit.UseVisualStyleBackColor = true;
             this.buttonEdit.Click += new System.EventHandler(this.buttonEdit_Click);
             // 
+            // Inversion
+            // 
+            this.Inversion.Location = new System.Drawing.Point(719, 690);
+            this.Inversion.Name = "Inversion";
+            this.Inversion.Size = new System.Drawing.Size(127, 29);
+            this.Inversion.TabIndex = 5;
+            this.Inversion.Text = "Inversion";
+            this.Inversion.UseVisualStyleBackColor = true;
+            this.Inversion.Click += new System.EventHandler(this.Inversion_Click);
+            // 
             // topForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1204, 749);
+            this.Controls.Add(this.Inversion);
             this.Controls.Add(this.buttonEdit);
             this.Controls.Add(this.buttonAdd);
             this.Controls.Add(this.buttonRemove);
@@ -110,6 +122,7 @@ namespace TaskScheduler
         private System.Windows.Forms.Button buttonRemove;
         private System.Windows.Forms.Button buttonAdd;
         private System.Windows.Forms.Button buttonEdit;
+        private System.Windows.Forms.Button Inversion;
     }
 }
 
