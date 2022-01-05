@@ -56,7 +56,12 @@ namespace TaskScheduler
             foreach (Task task in tasks)
             {
                 string[] item = { task.id.ToString(), task.taskName, task.discription, task.dueDate.ToString("yyyy/MM/dd") };
-                listViewTask.Items.Add(new ListViewItem(item));
+                ListViewItem targetItem =  new ListViewItem(item);
+                if (task.isDone == true)
+                {
+                    targetItem.BackColor = Color.DarkGray;
+                }
+                listViewTask.Items.Add(targetItem);
             }
         }
         private void buttonEdit_Click(object sender, EventArgs e)
@@ -166,6 +171,26 @@ namespace TaskScheduler
             foreach(Task targetTask in targetTasks)
             {
                 deserializedTasks.tasks.Remove(targetTask);
+            }
+            InitializeListView();
+        }
+
+        private void Inversion_Click(object sender, EventArgs e)
+        {
+            if (listViewTask.SelectedItems.Count == 0)
+            {
+                return;
+            }
+            SelectedListViewItemCollection itemx = listViewTask.SelectedItems;
+            foreach (ListViewItem item in itemx)
+            {
+                foreach (Task task in deserializedTasks.tasks)
+                {
+                    if (item.Text == task.id.ToString())
+                    {
+                        task.isDone = !task.isDone;
+                    }
+                }
             }
             InitializeListView();
         }
