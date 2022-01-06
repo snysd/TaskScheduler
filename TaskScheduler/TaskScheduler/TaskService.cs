@@ -21,5 +21,12 @@ namespace TaskScheduler
                    new IsoDateTimeConverter { DateTimeFormat = "dd/MM/yyyy" });
             return deserializedTasks;
         }
+        public void SaveTask(Tasks deserializedTasks)
+        {
+            string json = JsonConvert.SerializeObject(deserializedTasks);
+            StreamWriter writer = new StreamWriter(dataSourcePath,false);
+            writer.Write(json);
+            writer.Close();
+        }
     }
 }

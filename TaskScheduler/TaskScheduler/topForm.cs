@@ -16,9 +16,9 @@ namespace TaskScheduler
         public string IniPath = @"..\..\Settings\Ini.ini";
         public Tasks deserializedTasks;
         AddEditTaskForm addEditTaskForm;
+        IniFileService iniFileService = new IniFileService();
         public topForm()
         {
-            var iniFileService = new IniFileService();
             iniFileService.iniFilePath = IniPath;
             deserializedTasks = iniFileService.ReadIniFile();
             InitializeComponent();
@@ -193,6 +193,11 @@ namespace TaskScheduler
                 }
             }
             InitializeListView();
+        }
+
+        private void topForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            iniFileService.SaveTasks(deserializedTasks);
         }
     }
 }
