@@ -109,6 +109,7 @@ namespace TaskScheduler
             this.Controls.Add(this.label1);
             this.Name = "topForm";
             this.Text = "Form1";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.topForm_FormClosed);
             this.Load += new System.EventHandler(this.topForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
