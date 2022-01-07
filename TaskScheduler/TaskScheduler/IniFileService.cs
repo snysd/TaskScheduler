@@ -17,15 +17,10 @@ namespace TaskScheduler
             ReadIniFile(iniFilePath);   
         }
 
-        public Tasks ReadIniFile(string iniFilePath)
+        public void ReadIniFile(string iniFilePath)
         {
             var parser = new FileIniDataParser();
             iniData = parser.ReadFile(iniFilePath);
-        }
-
-        public void SaveTasks(Tasks deserializedTasks)
-        {
-            taskService.SaveTask(deserializedTasks);
         }
         
     }

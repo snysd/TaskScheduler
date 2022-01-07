@@ -75,29 +75,14 @@ namespace TaskScheduler
         private void buttonEdit_Click(object sender, EventArgs e)
         {
             // 選択しているタスクがなかったら何もしない
-            if (listViewTask.SelectedItems.Count == 0)
-            {
-                return;
-            }
+            if (listViewTask.SelectedItems.Count == 0) return;
 
             // 編集対象は選択されている最初のタスク
             ListViewItem itemx = listViewTask.SelectedItems[0];
 
             // 選択されているタスクをID検索
-            var tasks = taskService.deserializedTasks.tasks;
-            Task matchedTask = null;
-            foreach (Task task in tasks)
-            {
-                if(itemx.Text == task.id.ToString())
-                {
-                    matchedTask = task;
-                    break;
-                }
-            }
-            if(matchedTask == null)
-            {
-                return;
-            }
+            var matchedTask = taskService.GetTaskById(int.Parse(itemx.Text));       // for explain: port to service class
+            if (matchedTask == null) return;
 
             // AddEditForm表示
             addEditTaskForm = new AddEditTaskForm();
@@ -126,64 +111,50 @@ namespace TaskScheduler
         {
             addEditTaskForm = new AddEditTaskForm();
             addEditTaskForm.AddForm = true;
-            addEditTaskForm.maxId = GetMaxId();
+            addEditTaskForm.maxId = taskService.GetMaxId();     // for explain: Porting to service class
             addEditTaskForm.FormClosed += AddTaskClosed;
             addEditTaskForm.ShowDialog();
         }
-        private int GetMaxId()
-        {
-            var tasks = deserializedTasks.tasks;
-            List<int> Ids = new List<int>();
-            foreach (Task task in tasks)
-            {          
-                Ids.Add(task.id);
-            }
-            Ids.Reverse();
-            return Ids[0];
-        }
+
+
+        // Addフォーム終了時イベント
         private void AddTaskClosed(object sender, EventArgs e)
         {
-            if (addEditTaskForm.targetTask == null)
-            {
-                return;
-            }
-            Task addedTask = addEditTaskForm.targetTask;
-            deserializedTasks.tasks.Add(addedTask);
+            // ✕ボタンでEditFormが終了される可能性がある
+            if (addEditTaskForm.targetTask == null) return;
+
+            // TaskServiceのタスク一覧更新
+            taskService.AddTask(addEditTaskForm.targetTask);
+
+            // 追加内容をリストに反映
             InitializeListView();
         }
 
+        // Task削除ボタンクリックイベント
         private void buttonRemove_Click(object sender, EventArgs e)
         {
-            if (listViewTask.SelectedItems.Count == 0)
-            {
-                return;
-            }
+            // If no selected, do nothing.
+            if (listViewTask.SelectedItems.Count == 0) return;
+
+            // create target ids for remove
             SelectedListViewItemCollection itemx = listViewTask.SelectedItems;
-            var tasks = deserializedTasks.tasks;
-            List<Task> targetTasks = new List<Task>();
-            foreach (ListViewItem item in itemx)
+            List<int> targetIds = new List<int>();
+            foreach(ListViewItem item in itemx)
             {
-                foreach(Task task in tasks)
-                {
-                    if(item.Text == task.id.ToString())
-                    {
-                        targetTasks.Add(task);
-                    }
-                }
+                targetIds.Add(int.Parse(item.Text));
             }
-            foreach(Task targetTask in targetTasks)
-            {
-                deserializedTasks.tasks.Remove(targetTask);
-            }
+
+            // get remove tasks
+            var targetTasks = taskService.GetTasksByIds(targetIds);
+            if (targetTasks == null || targetTasks.Count == 0) return;
+            taskService.RemoveTasks(targetTasks);
             InitializeListView();
         }
 
+        // Inversion incompleteness or completeness
         private void Inversion_Click(object sender, EventArgs e)
         {
-            if (listViewTask.SelectedItems.Count == 0)
-            {
-                return;
-            }
+            if (listViewTask.SelectedItems.Count == 0) return;
             SelectedListViewItemCollection itemx = listViewTask.SelectedItems;
             foreach (ListViewItem item in itemx)
             {
