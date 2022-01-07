@@ -155,23 +155,22 @@ namespace TaskScheduler
         private void Inversion_Click(object sender, EventArgs e)
         {
             if (listViewTask.SelectedItems.Count == 0) return;
+
+            // create id list for inversion targets
             SelectedListViewItemCollection itemx = listViewTask.SelectedItems;
+            List<int> targtIds = new List<int>();
             foreach (ListViewItem item in itemx)
             {
-                foreach (Task task in deserializedTasks.tasks)
-                {
-                    if (item.Text == task.id.ToString())
-                    {
-                        task.isDone = !task.isDone;
-                    }
-                }
+                targtIds.Add(int.Parse(item.Text));
             }
+
+            taskService.InversionTasks(targtIds);
             InitializeListView();
         }
 
         private void topForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            iniFileService.SaveTasks(deserializedTasks);
+            taskService.SaveTask();
         }
     }
 }

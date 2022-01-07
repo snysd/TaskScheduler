@@ -102,8 +102,31 @@ namespace TaskScheduler
             deserializedTasks.tasks.Add(addedTask);
         }
 
+        // Taskの削除
+        public void RemoveTasks(List<Task> targetTasks)
+        {
+            foreach (Task targetTask in targetTasks)
+            {
+                deserializedTasks.tasks.Remove(targetTask);
+            }
+        }
 
-        public void SaveTask(Tasks deserializedTasks)
+        // Taskの完了/未完了切り替え
+        public void InversionTasks(List<int> ids)
+        {
+            foreach(var id in ids)
+            {
+                foreach (Task task in deserializedTasks.tasks)
+                {
+                    if (id == task.id)
+                    {
+                        task.isDone = !task.isDone;
+                    }
+                }
+            }
+        }
+
+        public void SaveTask()
         {
             string json = JsonConvert.SerializeObject(deserializedTasks);
             StreamWriter writer = new StreamWriter(dataSourcePath,false);
