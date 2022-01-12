@@ -10,22 +10,17 @@ namespace TaskScheduler
 {
     class IniFileService
     {
-        public string iniFilePath;
-        TaskService taskService = new TaskService();
-        public Tasks ReadIniFile()
-        {
-            var parser = new FileIniDataParser();
-            IniData data = parser.ReadFile(iniFilePath);
-            string dataSourcePath = data["DataSource"]["DataSourcePath"];
+        public IniData iniData;
 
-            taskService.dataSourcePath = dataSourcePath;
-            var deserializedTasks = taskService.ReadTaskFile();
-            return deserializedTasks;
+        public IniFileService(string iniFilePath)
+        {
+            ReadIniFile(iniFilePath);   
         }
 
-        public void SaveTasks(Tasks deserializedTasks)
+        public void ReadIniFile(string iniFilePath)
         {
-            taskService.SaveTask(deserializedTasks);
+            var parser = new FileIniDataParser();
+            iniData = parser.ReadFile(iniFilePath);
         }
         
     }

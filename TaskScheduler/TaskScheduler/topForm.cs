@@ -14,19 +14,28 @@ namespace TaskScheduler
     public partial class topForm : Form
     {
         public string IniPath = @"..\..\Settings\Ini.ini";
-        public Tasks deserializedTasks;
+
         AddEditTaskForm addEditTaskForm;
-        IniFileService iniFileService = new IniFileService();
+        TaskService taskService = new TaskService();
+
         public topForm()
         {
-            iniFileService.iniFilePath = IniPath;
-            deserializedTasks = iniFileService.ReadIniFile();
+            // Iniファイルの読み込み
+            IniFileService iniFileService = new IniFileService(IniPath);
+
+            // Taskファイルの読み込み
+            taskService.ReadTaskFile(iniFileService.iniData["DataSource"]["DataSourcePath"]);
             InitializeComponent();
         }
+
+        // Top画面のロードイベント
         private void topForm_Load(object sender, EventArgs e)
         {
+            // タスクリストの作成
             InitializeListView();
         }
+
+        // ListViewの作成
         private void InitializeListView()
         {
             listViewTask.FullRowSelect = true;
@@ -35,23 +44,20 @@ namespace TaskScheduler
             listViewTask.View = View.Details;
 
             listViewTask.Columns.Clear();
-            var columnTaskId = new ColumnHeader();
-            var columnTask = new ColumnHeader();
-            var columnDescription = new ColumnHeader();
-            var columnDate = new ColumnHeader();
-            columnTaskId.Text = "タスクID";
-            columnTaskId.Width = 100;
-            columnTask.Text = "タスク";
-            columnTask.Width = 60;
-            columnDescription.Text = "説明";
-            columnDescription.Width = 140;
-            columnDate.Text = "期限";
-            columnDate.Width = 140;
-            ColumnHeader[] colHeaderRegValue =
-            { columnTaskId, columnTask,columnDescription,columnDate };
-            listViewTask.Columns.AddRange(colHeaderRegValue);
+            string[] headers = new string[]{ "タスクID", "タスク", "説明", "期限" };
 
-            var tasks = deserializedTasks.tasks;
+            // タスクリストのヘッダ作成
+            foreach(var header in headers)
+            {
+                ColumnHeader columnHeader = new ColumnHeader();
+                columnHeader.Text = header;
+                listViewTask.Columns.Add(columnHeader);
+            }
+
+            // TaskServiceよりTask一覧取得
+            var tasks = taskService.deserializedTasks.tasks;
+
+            // タスク一覧作成
             listViewTask.Items.Clear();
             foreach (Task task in tasks)
             {
@@ -64,140 +70,107 @@ namespace TaskScheduler
                 listViewTask.Items.Add(targetItem);
             }
         }
+
+        // タスク編集時
         private void buttonEdit_Click(object sender, EventArgs e)
         {
-            if (listViewTask.SelectedItems.Count == 0)
-            {
-                return;
-            }
-            ListViewItem itemx = listViewTask.SelectedItems[0];
-            var tasks = deserializedTasks.tasks;
+            // 選択しているタスクがなかったら何もしない
+            if (listViewTask.SelectedItems.Count == 0) return;
 
-            Task matchedTask = null;
-            foreach (Task task in tasks)
-            {
-                if(itemx.Text == task.id.ToString())
-                {
-                    matchedTask = task;
-                    break;
-                }
-            }
-            if(matchedTask == null)
-            {
-                return;
-            }
+            // 編集対象は選択されている最初のタスク
+            ListViewItem itemx = listViewTask.SelectedItems[0];
+
+            // 選択されているタスクをID検索
+            var matchedTask = taskService.GetTaskById(int.Parse(itemx.Text));       // for explain: port to service class
+            if (matchedTask == null) return;
+
+            // AddEditForm表示
             addEditTaskForm = new AddEditTaskForm();
             addEditTaskForm.targetTask = matchedTask;
             addEditTaskForm.FormClosed += EditTaskClosed;
             addEditTaskForm.AddForm = false;
             addEditTaskForm.ShowDialog();
         }
+
+        // EditForm終了イベント
         private void EditTaskClosed(object sender, EventArgs e)
         {
-            if (addEditTaskForm.targetTask == null)
-            {
-                return;
-            }
+            // ✕ボタンでEditFormが終了される可能性がある
+            if (addEditTaskForm.targetTask == null) return;
+
+            // TaskServiceのタスク一覧を編集対象タスクで更新
             Task editedTask = addEditTaskForm.targetTask;
-            var tasks = deserializedTasks.tasks;
-            int i = 0;
-            int matchedIndex = -1;
-            foreach (Task task in tasks)
-            {
-                if (editedTask.id == task.id)
-                {
-                    matchedIndex = i;
-                    break;
-                }
-                i++;
-            }
-            if (matchedIndex < 0)
-            {
-                return;
-            }
-            deserializedTasks.tasks[matchedIndex] = editedTask;
+            taskService.UpdateTask(editedTask);
+
+            // タスク一覧へ変更内容を反映
             InitializeListView();
         }
 
+        // Addボタンクリックイベント
         private void buttonAdd_Click(object sender, EventArgs e)
         {
             addEditTaskForm = new AddEditTaskForm();
             addEditTaskForm.AddForm = true;
-            addEditTaskForm.maxId = GetMaxId();
+            addEditTaskForm.maxId = taskService.GetMaxId();     // for explain: Porting to service class
             addEditTaskForm.FormClosed += AddTaskClosed;
             addEditTaskForm.ShowDialog();
         }
-        private int GetMaxId()
-        {
-            var tasks = deserializedTasks.tasks;
-            List<int> Ids = new List<int>();
-            foreach (Task task in tasks)
-            {          
-                Ids.Add(task.id);
-            }
-            Ids.Reverse();
-            return Ids[0];
-        }
+
+
+        // Addフォーム終了時イベント
         private void AddTaskClosed(object sender, EventArgs e)
         {
-            if (addEditTaskForm.targetTask == null)
-            {
-                return;
-            }
-            Task addedTask = addEditTaskForm.targetTask;
-            deserializedTasks.tasks.Add(addedTask);
+            // ✕ボタンでEditFormが終了される可能性がある
+            if (addEditTaskForm.targetTask == null) return;
+
+            // TaskServiceのタスク一覧更新
+            taskService.AddTask(addEditTaskForm.targetTask);
+
+            // 追加内容をリストに反映
             InitializeListView();
         }
 
+        // Task削除ボタンクリックイベント
         private void buttonRemove_Click(object sender, EventArgs e)
         {
-            if (listViewTask.SelectedItems.Count == 0)
-            {
-                return;
-            }
+            // If no selected, do nothing.
+            if (listViewTask.SelectedItems.Count == 0) return;
+
+            // create target ids for remove
             SelectedListViewItemCollection itemx = listViewTask.SelectedItems;
-            var tasks = deserializedTasks.tasks;
-            List<Task> targetTasks = new List<Task>();
-            foreach (ListViewItem item in itemx)
+            List<int> targetIds = new List<int>();
+            foreach(ListViewItem item in itemx)
             {
-                foreach(Task task in tasks)
-                {
-                    if(item.Text == task.id.ToString())
-                    {
-                        targetTasks.Add(task);
-                    }
-                }
+                targetIds.Add(int.Parse(item.Text));
             }
-            foreach(Task targetTask in targetTasks)
-            {
-                deserializedTasks.tasks.Remove(targetTask);
-            }
+
+            // get remove tasks
+            var targetTasks = taskService.GetTasksByIds(targetIds);
+            if (targetTasks == null || targetTasks.Count == 0) return;
+            taskService.RemoveTasks(targetTasks);
             InitializeListView();
         }
 
+        // Inversion incompleteness or completeness
         private void Inversion_Click(object sender, EventArgs e)
         {
-            if (listViewTask.SelectedItems.Count == 0)
-            {
-                return;
-            }
+            if (listViewTask.SelectedItems.Count == 0) return;
+
+            // create id list for inversion targets
             SelectedListViewItemCollection itemx = listViewTask.SelectedItems;
+            List<int> targtIds = new List<int>();
             foreach (ListViewItem item in itemx)
             {
-                foreach (Task task in deserializedTasks.tasks)
-                {
-                    if (item.Text == task.id.ToString())
-                    {
-                        task.isDone = !task.isDone;
-                    }
-                }
+                targtIds.Add(int.Parse(item.Text));
             }
+
+            taskService.InversionTasks(targtIds);
             InitializeListView();
         }
 
         private void topForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            iniFileService.SaveTasks(deserializedTasks);
+            taskService.SaveTask();
         }
     }
 }
